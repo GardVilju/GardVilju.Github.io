@@ -9,10 +9,9 @@ body {
 }
 /* Dette er selve størelsen på nettsiden og bakgrunns-fargen */
 
-.center {
-  display: block;
+.responsive {
+  width: 100%;
+  height: auto;
   margin-left: auto;
   margin-right: auto;
-  width: 50%;
 }
-/* Dette lager en blokk element som putter ting i mitten */
