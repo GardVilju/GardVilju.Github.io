@@ -1,17 +1,9 @@
 body {
-    margin: 0; 
     display: flex; 
     justify-content: center;
     align-items: center; 
-    min-height: 100vh; 
-    overflow: auto; 
-    background-color: #ffffff; 
-}
-
-.container {
     width: 1500px; 
     height: 1500px;
     overflow: auto; 
     background-color: #ffffff; 
-    box-sizing: border-box;
-    }
+}
