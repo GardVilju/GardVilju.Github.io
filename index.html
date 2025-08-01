@@ -103,6 +103,32 @@
 </body>
 </html>
 
+<!-- Dette under er en ripple effect når man trykker. -->
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, height=device-height, user-scalable=no" />
+  <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" type="text/css" />
+  <link href="../resources/demo.css" rel="stylesheet" type="text/css" />
+  <script src="../components/polymer/polymer.js"></script>
+  <script src="../components/web-animations-js/web-animations.min.js"></script>
+  <style>
+body {
+  overflow: hidden;
+  background: #090809;
+  will-change: transform;
+}
+div {
+  border-radius: 50%;
+  background: black;
+  width: 300px;
+  height: 300px;
+  position: absolute;
+  opacity: 0.66;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+
   </style>
 </head>
 <body touch-action="none">
@@ -132,7 +158,6 @@ var duration = 450;
   });
 }
 
-// dette under er en ripple effekt når man trykker.
 Wave.prototype = {
   up: function() {
     this.up = function() {};
