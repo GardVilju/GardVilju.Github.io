@@ -5,8 +5,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, height=device-height, user-scalable=no">
-  <title>Gard`s Page</title>
-  <meta name="description" content="noe jeg  jobber med.">
+  <title>Insert Your Page Title Here</title>
+  <meta name="description" content="This is the description that search engines will display. Aim for 145-155 characters.">
   <meta name="author" content="Gard Viljugrein">
 
   <link rel="stylesheet" href="style.css">
@@ -19,7 +19,7 @@
 <script src="../components/web-animations-js/web-animations.min.js"></script>
 <style>
   body {
-    background-color: #090809;
+    background-color: black;
     overflow: hidden;
   }
 
@@ -53,6 +53,14 @@
     opacity: 1;
     position: absolute;
   }
+      .responsive-image {
+      display: block;
+      margin: 0 auto; 
+      max-width: 100%; 
+      height: auto; 
+      position: relative; 
+      z-index: 10; 
+  }   
 </style>
 <div id="universe"></div>
 <script>
@@ -76,6 +84,7 @@
     star.animate([{transform: 'translate3d(' + width + 'px, ' + ypos + 'px, 0)'},
                   {transform: 'translate3d(-' + Math.random() * 256 + 'px, ' + ypos + 'px, 0)'}],
                  {delay: Math.random() * -speed, duration: speed, iterations: 1000});
+                
   }
 </script>
   <body>
@@ -88,4 +97,3 @@
   </body>
 
 </html>
-
