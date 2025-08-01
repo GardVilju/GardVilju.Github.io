@@ -1,8 +1,3 @@
-// script.js
-
-// Ensure web-animations.min.js is loaded if it's external (as per your original setup)
-// If it's loaded via <script src="../components/web-animations-js/web-animations.min.js"></script>
-// in your index.html, then no need to put it here.
 
 var layerCount = 4;
 var starCount = 500;
