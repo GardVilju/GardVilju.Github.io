@@ -8,61 +8,77 @@
   <meta name="author" content="Gard Viljugrein">
 
   <link rel="stylesheet" href="style.css">
+
+  <link href="../resources/demo.css" rel="stylesheet" type="text/css" />
+
+  <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" type="text/css" />
+
+  <script src="../components/polymer/polymer.js"></script>
+  <script src="../components/web-animations-js/web-animations.min.js"></script>
+
   <style>
     body {
       background-color: #090809;
-      overflow: hidden;
+      overflow: hidden; /* This stops scrolling */
       margin: 0;
       padding: 0;
+      will-change: transform; /* From ripple body style */
     }
 
+    /* Styles for the universe container */
+    #universe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 100; /* Stars (within #universe) appear OVER your image */
+    }
+
+    /* Star styles */
     .star0, .star1, .star2, .star3 {
       opacity: 1;
-      position: absolute; 
-      background-color: white; 
+      position: absolute;
+      background-color: white;
     }
 
-    .star0 {
-      height: 1px;
-      width: 1px;
-    }
+    .star0 { height: 1px; width: 1px; }
+    .star1 { height: 2px; width: 2px; border-radius: 50%; }
+    .star2 { height: 3px; width: 3px; border-radius: 50%; }
+    .star3 { height: 4px; width: 4px; border-radius: 50%; }
 
-    .star1 {
-      height: 2px;
-      width: 2px;
-      border-radius: 50%;
-    }
-
-    .star2 {
-      height: 3px;
-      width: 3px;
-      border-radius: 50%;
-    }
-
-    .star3 {
-      height: 4px;
-      width: 4px;
-      border-radius: 50%;
-    }
-
+    /* Styles for your responsive image */
     .responsive-image {
       display: block;
       margin: 0 auto;
       max-width: 100%;
       height: auto;
       opacity: 0.85;
-      position: relative; 
-      z-index: 9; 
+      position: relative; /* Maintain relative positioning */
+      z-index: 9; /* Image appears UNDER the stars */
+    }
+
+    /* Ripple effect specific div style (from your second body style block) */
+    .ripple-wave { /* Renamed `div` to `ripple-wave` for specificity */
+      border-radius: 50%;
+      background: black; /* This color will be overridden by JS, but good fallback */
+      width: 300px;
+      height: 300px;
+      position: absolute;
+      opacity: 1;
+      z-index: 8; /* Ensure ripple waves are below the image or on a controlled layer */
+      -webkit-user-select: none;
+      user-select: none;
     }
   </style>
-</head>
 
-<body>
-  <div id="universe"></div>
+</head>
+<body touch-action="none"> <div id="universe"></div>
 
   <img src="https://lh3.googleusercontent.com/pw/AP1GczPrwJQdnT4ATOxkLt707BxlvmpETyhezc3Ma8sAB55qh3sgGIug5bmigPNpHs6dXS72t0QxgQpguV_0s2oFpHFJM9j_PfjvKQS4j0O8q83Pan7zULw=w1080-h1080" width="1000" height="1000" class="responsive-image">
 
   <script>
+    // --- Star Animation Code ---
     var layerCount = 4;
     var starCount = 500;
     var maxTime = 31;
@@ -71,19 +87,22 @@
     var d = document;
     var e = d.documentElement;
     var g = d.getElementsByTagName('body')[0];
-    
+
     var width = w.innerWidth || e.clientWidth || g.clientWidth;
     var height = w.innerHeight || e.clientHeight || g.clientHeight;
 
+    // To make stars appear top center (adjust topBandHeight as desired)
+    var topBandHeight = height * 0.10; // Top 10% of the screen for stars
+
     for (var i = 0; i < starCount; ++i) {
       var xpos = Math.round(Math.random() * width);
-      var ypos = Math.round(Math.random() * height);
+      var ypos = Math.round(Math.random() * topBandHeight); // Stars in top band
 
       var star = document.createElement('div');
       var speed = 1000 * (Math.random() * maxTime + 1);
 
       star.setAttribute('class', 'star' + (3 - Math.floor((speed / 1000) / 8)));
-      star.style.backgroundColor = 'white'; // Keep stars white
+      star.style.backgroundColor = 'white';
 
       universe.appendChild(star);
 
@@ -93,99 +112,80 @@
           { transform: 'translate3d(-' + (Math.random() * 256 + (star.offsetWidth || 0)) + 'px, ' + ypos + 'px, 0)' }
         ],
         {
-          delay: Math.random() * -speed, 
-          duration: speed, 
-          iterations: 1000 
+          delay: Math.random() * -speed,
+          duration: speed,
+          iterations: 1000
         }
       );
     }
-  </script>
-</body>
-</html>
 
-<!-- Dette under er en ripple effect når man trykker. -->
-<html>
-<head>
-  <meta name="viewport" content="width=device-width, height=device-height, user-scalable=no" />
-  <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" type="text/css" />
-  <link href="../resources/demo.css" rel="stylesheet" type="text/css" />
-  <script src="../components/polymer/polymer.js"></script>
-  <script src="../components/web-animations-js/web-animations.min.js"></script>
-  <style>
-body {
-  overflow: hidden;
-  background: #090809;
-  will-change: transform;
-}
-div {
-  border-radius: 50%;
-  background: black;
-  width: 300px;
-  height: 300px;
-  position: absolute;
-  opacity: 1;
-  z-index: 8;
-  -webkit-user-select: none;
-  user-select: none;
-}
+    // --- Ripple Effect Code ---
+    var waves = [];
+    var duration = 450;
 
+    function Wave(x, y) {
+      waves.push(this);
+      this.element = document.createElement('div');
+      // Assign a specific class to the ripple div for CSS
+      this.element.className = 'ripple-wave';
+      this.element.style.left = 'calc(' + x + 'px - 150px)';
+      this.element.style.top = 'calc(' + y + 'px - 150px)';
+      this.element.setAttribute('touch-action', 'none');
+      // Polyfill for 'up' event might be needed if not using Polymer's own event system
+      // For now, assuming Polymer handles it.
+      this.element.addEventListener('up', up); // This 'up' event is likely Polymer-specific or needs polyfill
 
-  </style>
-</head>
-<body touch-action="none">
-<script>
-var waves = [];
-var duration = 450;       
- function Wave(x, y) {
-  waves.push(this);
-  this.element = document.createElement('div');
-  this.element.style.left = 'calc(' + x + 'px - 150px)';
-  this.element.style.top = 'calc(' + y + 'px - 150px)';
-  this.element.setAttribute('touch-action', 'none');
-  this.element.addEventListener('up', up);
+      var hue = Math.random() * 360;
+      this.element.style.backgroundColor = 'hsl(' + hue + ', 85%, 67%)';
 
-  var hue = Math.random() * 360;
-  this.element.style.backgroundColor = 'hsl(' + hue + ', 85%, 67%)';
+      document.body.appendChild(this.element);
 
-  document.body.appendChild(this.element);
+      this.scale = this.element.animate(
+        [{ transform: 'scale(0)' }, { transform: 'scale(1)' }],
+        {
+          duration: duration,
+          easing: 'cubic-bezier(.22,.67,.52,.92)',
+          fill: 'forwards',
+        }
+      );
+    }
 
-  this.scale = this.element.animate([
-    {transform: 'scale(0)'},
-    {transform: 'scale(1)'},
-  ], {
-    duration: duration,
-    easing: 'cubic-bezier(.22,.67,.52,.92)',
-    fill: 'forwards',
-  });
-}
+    Wave.prototype = {
+      up: function () {
+        this.up = function () {}; // Prevent further 'up' calls on this wave
+        this.opacity = this.element.animate(
+          [{ opacity: 0.66 }, { opacity: 0 }],
+          {
+            duration: duration,
+            fill: 'forwards',
+          }
+        );
+        this.opacity.onfinish = function () {
+          this.element.remove();
+          waves.splice(waves.indexOf(this), 1);
+        }.bind(this);
+      },
+    };
 
-Wave.prototype = {
-  up: function() {
-    this.up = function() {};
-    this.opacity = this.element.animate([
-      {opacity: 0.66},
-      {opacity: 0},
-    ], {
-      duration: duration,
-      fill: 'forwards',
+    // Event listeners for 'down' and 'up' events
+    // These 'down'/'up' events are not standard DOM events like 'mousedown'/'mouseup' or 'touchstart'/'touchend'.
+    // They are likely custom events provided by Polymer or web-animations-js polyfill.
+    // If they don't fire, you might need to use standard events and map them.
+    document.body.addEventListener('down', function (e) {
+      waves.forEach(function (wave) {
+        wave.up();
+      });
+      new Wave(e.clientX, e.clientY);
     });
-    this.opacity.onfinish = function() {
-      this.element.remove();
-      waves.splice(waves.indexOf(this), 1);
-    }.bind(this);
-  }
-};
 
-document.body.addEventListener('down', function(e) {
-  waves.forEach(function(wave) { wave.up(); });
-  new Wave(e.clientX, e.clientY);
-});
+    function up() {
+      waves.forEach(function (wave) {
+        wave.up();
+      });
+    }
 
-function up() {
-  waves.forEach(function(wave) { wave.up(); });
-}
+    document.body.addEventListener('up', up);
+  </script>
 
-document.body.addEventListener('up', up);
-</script>
 </body>
 </html>
