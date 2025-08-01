@@ -8,19 +8,98 @@
   <meta name="author" content="Gard Viljugrein">
 
   <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      background-color: #090809;
+      overflow: hidden;
+      margin: 0;
+      padding: 0;
+    }
 
-  <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" type="text/css" />
+    .star0, .star1, .star2, .star3 {
+      opacity: 1;
+      position: absolute; 
+      background-color: white; 
+    }
 
-  <link rel="stylesheet" href="../resources/demo.css">
-  <script src="../components/polymer/polymer.js"></script>
-  <script src="../components/web-animations-js/web-animations.min.js"></script>
+    .star0 {
+      height: 1px;
+      width: 1px;
+    }
 
-  </head>
-<body touch-action="none"> <div id="universe"></div>
+    .star1 {
+      height: 2px;
+      width: 2px;
+      border-radius: 50%;
+    }
+
+    .star2 {
+      height: 3px;
+      width: 3px;
+      border-radius: 50%;
+    }
+
+    .star3 {
+      height: 4px;
+      width: 4px;
+      border-radius: 50%;
+    }
+
+    .responsive-image {
+      display: block;
+      margin: 0 auto;
+      max-width: 100%;
+      height: auto;
+      opacity: 0.85;
+      position: relative; 
+      z-index: 9; 
+    }
+  </style>
+</head>
+
+<body>
+  <div id="universe"></div>
 
   <img src="https://lh3.googleusercontent.com/pw/AP1GczPrwJQdnT4ATOxkLt707BxlvmpETyhezc3Ma8sAB55qh3sgGIug5bmigPNpHs6dXS72t0QxgQpguV_0s2oFpHFJM9j_PfjvKQS4j0O8q83Pan7zULw=w1080-h1080" width="1000" height="1000" class="responsive-image">
 
-  <script src="script.js"></script>
+  <script>
+    var layerCount = 4;
+    var starCount = 500;
+    var maxTime = 31;
+    var universe = document.getElementById('universe');
+    var w = window;
+    var d = document;
+    var e = d.documentElement;
+    var g = d.getElementsByTagName('body')[0];
+    
+    var width = w.innerWidth || e.clientWidth || g.clientWidth;
+    var height = w.innerHeight || e.clientHeight || g.clientHeight;
 
+    for (var i = 0; i < starCount; ++i) {
+      var xpos = Math.round(Math.random() * width);
+      var ypos = Math.round(Math.random() * height);
+
+      var star = document.createElement('div');
+      var speed = 1000 * (Math.random() * maxTime + 1);
+
+      star.setAttribute('class', 'star' + (3 - Math.floor((speed / 1000) / 8)));
+      star.style.backgroundColor = 'white'; // Keep stars white
+
+      universe.appendChild(star);
+
+      star.animate(
+        [
+          { transform: 'translate3d(' + xpos + 'px, ' + ypos + 'px, 0)' },
+          { transform: 'translate3d(-' + (Math.random() * 256 + (star.offsetWidth || 0)) + 'px, ' + ypos + 'px, 0)' }
+        ],
+        {
+          delay: Math.random() * -speed, 
+          duration: speed, 
+          iterations: 1000 
+        }
+      );
+    }
+  </script>
 </body>
 </html>
+
