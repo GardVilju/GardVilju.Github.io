@@ -97,6 +97,18 @@
           duration: speed, 
           iterations: 1000 
         }
+      );
+    }
+  </script>
+</body>
+</html>
+
+  </style>
+</head>
+<body touch-action="none">
+<script>
+var waves = [];
+var duration = 450;       
  function Wave(x, y) {
   waves.push(this);
   this.element = document.createElement('div');
@@ -120,6 +132,7 @@
   });
 }
 
+// dette under er en ripple effekt når man trykker.
 Wave.prototype = {
   up: function() {
     this.up = function() {};
