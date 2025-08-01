@@ -22,5 +22,6 @@ body {
     max-width: 100%; 
     height: auto; 
     display: block;
+    opacity: 0.9;
     position: relative;
 }
