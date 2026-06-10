@@ -9,6 +9,217 @@
 
   <link rel="stylesheet" href="style.css">
   <style>
+    /* Added: restore black background and star canvas */
+    html,body{height:100%;margin:0;background:#000;overflow:hidden;}
+    #starfield{position:fixed;inset:0;width:100%;height:100%;z-index:0;display:block;pointer-events:none;}
+
+    /* Make existing main content sit above stars */
+    .site-root, main, .app { position:relative; z-index:1; }
+
+    /* Static image opacity (tweak to taste) */
+    .static-image, img.static { opacity:0.78; mix-blend-mode:screen; filter:contrast(1.02); }
+
+    /* Upgraded login UI — glass + neon + subtle animation */
+    .login-card{
+      position:relative;
+      z-index:2;
+      width:360px;
+      max-width:90%;
+      margin:40px auto;
+      padding:28px;
+      border-radius:14px;
+      background:linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+      box-shadow: 0 6px 30px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.02);
+      backdrop-filter: blur(8px) saturate(120%);
+      border: 1px solid rgba(255,255,255,0.06);
+      transform: translateY(0);
+      transition: transform .28s ease, box-shadow .28s ease;
+      text-align:left;
+      color:#eaf2ff;
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    .login-card:hover{ transform: translateY(-6px); box-shadow: 0 26px 60px rgba(11,15,30,0.7); }
+
+    .login-header{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      margin-bottom:18px;
+    }
+    .logo-blob{
+      width:54px;height:54px;border-radius:50%;
+      background:linear-gradient(135deg,#7b61ff,#26f7d8);
+      box-shadow: 0 6px 30px rgba(124,92,255,0.18);
+      display:flex;align-items:center;justify-content:center;
+      overflow:hidden;
+    }
+    .logo-blob img {
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
+    .login-title{font-size:18px;font-weight:700;margin:0;color:#e9f5ff;}
+    .login-sub{font-size:12px;color:rgba(234,242,255,0.7);margin-top:4px;}
+
+    .login-field{display:block;width:100%;margin:10px 0;padding:12px 14px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);background:rgba(10,14,22,0.45);color:#eaf2ff;outline:none;}
+    .login-field::placeholder{color:rgba(234,242,255,0.45);}
+    .login-btn{
+      width:100%;padding:12px;border-radius:10px;border:0;margin-top:12px;
+      background:linear-gradient(90deg,#7b61ff,#26f7d8);
+      color:#021029;font-weight:700;cursor:pointer;
+      box-shadow:0 8px 30px rgba(38,247,216,0.08), 0 2px 8px rgba(123,97,255,0.12);
+      transition:transform .12s ease, box-shadow .12s ease, filter .12s;
+    }
+    .login-btn:active{ transform:translateY(1px) scale(.998); }
+    /* Small neon accent line */
+    .neon-accent{height:6px;border-radius:999px;margin-bottom:18px;background:linear-gradient(90deg,#7b61ff, #00ffd0, #26f7d8);filter:blur(8px);opacity:0.9}
+
+    /* Responsive tweaks */
+    @media (max-width:420px){
+      .login-card{padding:18px}
+      .logo-blob{width:44px;height:44px}
+    }
+
+    /* Pattern lock styles */
+    .pattern-lock {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .pattern-dot {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.05);
+      cursor: pointer;
+      position: relative;
+      transition: background .2s;
+    }
+    .pattern-dot.active {
+      background: rgba(38,247,216,0.8);
+      border-color: rgba(255,255,255,0.3);
+    }
+    .pattern-dot:active {
+      background: rgba(38,247,216,1);
+    }
+    .pattern-instructions {
+      font-size: 12px;
+      color: rgba(234,242,255,0.7);
+      margin-top: -10px;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="starfield" aria-hidden="true"></canvas>
+
+  <img src="images/logo.png" width="1000" height="1000" class="responsive-image" alt="Static image">
+
+  <div class="login-modal" role="dialog" aria-hidden="true">
+    <div class="login-card" role="document" aria-label="Local login form">
+      <button class="close-btn" type="button" aria-label="Close login dialog">&times;</button>
+      <div class="neon-accent" aria-hidden="true"></div>
+
+      <div class="login-header">
+        <div class="logo-blob">
+          <img src="images/logo.gif" alt="GV logo">
+        </div>
+        <div>
+          <div class="login-title">Welcome back</div>
+          <div class="login-sub">Draw your unlock pattern below</div>
+        </div>
+      </div>
+
+      <div id="patternInstructions" class="pattern-instructions">
+        Tap and drag across the dots to unlock.
+      </div>
+
+      <div class="pattern-lock" id="patternLock" aria-label="Pattern unlock grid">
+        <canvas id="patternCanvas" class="pattern-canvas" aria-hidden="true"></canvas>
+        <button class="pattern-dot" type="button" data-index="0"></button>
+        <button class="pattern-dot" type="button" data-index="1"></button>
+        <button class="pattern-dot" type="button" data-index="2"></button>
+        <button class="pattern-dot" type="button" data-index="3"></button>
+        <button class="pattern-dot" type="button" data-index="4"></button>
+        <button class="pattern-dot" type="button" data-index="5"></button>
+        <button class="pattern-dot" type="button" data-index="6"></button>
+        <button class="pattern-dot" type="button" data-index="7"></button>
+        <button class="pattern-dot" type="button" data-index="8"></button>
+      </div>
+
+      <div id="loginMessage" class="login-message" aria-live="polite"></div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+  <script>
+    (function(){
+      const canvas = document.getElementById('starfield');
+      const ctx = canvas.getContext('2d');
+      let w=0,h=0,stars=[];
+
+      function resize(){
+        w = canvas.width = innerWidth;
+        h = canvas.height = innerHeight;
+        initStars();
+      }
+      function initStars(){
+        const count = Math.round((w*h)/9000); // density tweak
+        stars = [];
+        for(let i=0;i<count;i++){
+          stars.push({
+            x: Math.random()*w,
+            y: Math.random()*h,
+            r: Math.random()*1.2+0.2,
+            alpha: Math.random(),
+            twinkle: Math.random()*0.02 + 0.002,
+            dir: Math.random()>.5?1:-1
+          });
+        }
+      }
+      function draw(){
+        ctx.clearRect(0,0,w,h);
+        for(const s of stars){
+          s.alpha += s.twinkle * s.dir;
+          if(s.alpha <= 0.06){ s.dir = 1; s.alpha = 0.06; }
+          if(s.alpha >= 1){ s.dir = -1; s.alpha = 1; }
+          ctx.beginPath();
+          const g = ctx.createRadialGradient(s.x,s.y,0,s.x,s.y,s.r*6);
+          g.addColorStop(0, `rgba(255,255,255,${s.alpha})`);
+          g.addColorStop(0.6, `rgba(173,216,255,${s.alpha*0.25})`);
+          g.addColorStop(1, `rgba(0,0,0,0)`);
+          ctx.fillStyle = g;
+          ctx.arc(s.x, s.y, s.r*3, 0, Math.PI*2);
+          ctx.fill();
+        }
+        requestAnimationFrame(draw);
+      }
+
+      addEventListener('resize', resize, {passive:true});
+      resize();
+      draw();
+    })();
+  </script>
+
+  <!-- load animations (adds click handler to .responsive-image to toggle .login-modal.active) -->
+  <script src="animations.min.js"></script>
+</body>
+</html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, height=device-height, user-scalable=no, initial-scale=1.0">
+  <title>Gard`s Page</title>
+  <meta name="description" content="noe jeg jobber med.">
+  <meta name="author" content="Gard Viljugrein">
+
+  <link rel="stylesheet" href="style.css">
+  <style>
     body {
       background-color: #090809;
       overflow: hidden;
