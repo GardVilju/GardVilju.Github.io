@@ -13,7 +13,7 @@ body {
     left: 0;
     width: 100%; 
     height: 100%; 
-    z-index: 10; 
+    z-index: 1;
 }
 
 .star0, .star1, .star2, .star3 {
@@ -39,42 +39,49 @@ body {
     height: auto;
     position: relative;
     z-index: 9;
-    opacity: 0.9;
+    opacity: 0.7; /* more opacity for the static image */
+    mix-blend-mode: screen;
+    filter: contrast(1.02) saturate(1.02);
     cursor: pointer;
-    transition: transform 0.3s ease;
+    transition: transform 0.28s ease, opacity 0.28s ease;
+    will-change: transform, opacity;
 }
 
 .responsive-image:hover {
-    transform: scale(1.05);
+    transform: scale(1.04);
+    opacity: 0.98;
 }
 
+/* Replace previous .login-modal rules with a transition-friendly version */
 .login-modal {
-    display: none;
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
-    z-index: 100;
+    inset: 0;
+    display: flex;
     justify-content: center;
     align-items: center;
+    background-color: rgba(0,0,0,0.7);
+    z-index: 100;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateY(20px);
+    transition: opacity .45s ease, transform .45s cubic-bezier(.2,.9,.2,1), visibility .45s;
 }
 
 .login-modal.active {
-    display: flex;
-    animation: slideUp 0.5s ease-out;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateY(0);
 }
 
-@keyframes slideUp {
-    from {
-        transform: translateY(100vh);
-        opacity: 0;
-    }
-    to {
-        transform: translateY(0);
-        opacity: 1;
-    }
+.login-card {
+    max-width: 420px;
+    padding: 32px;
+    border-radius: 24px;
+    background: rgba(8, 12, 22, 0.78);
+    border: 1px solid rgba(255,255,255,0.08);
+    box-shadow: 0 30px 90px rgba(0,0,0,0.45), inset 0 0 0 1px rgba(255,255,255,0.02);
 }
 
 .login-container {
@@ -118,14 +125,26 @@ body {
 
 .close-btn {
     position: absolute;
-    top: 20px;
-    right: 20px;
-    background: none;
-    border: none;
-    color: #fff;
-    font-size: 28px;
+    top: 18px;
+    right: 18px;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.18);
+    background: rgba(255,255,255,0.08);
+    color: #e9f5ff;
+    font-size: 22px;
+    line-height: 1;
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.06), 0 18px 50px rgba(54, 95, 255, 0.16);
     cursor: pointer;
+    transition: transform .2s ease, background .2s ease, box-shadow .2s ease;
 }
+.close-btn:hover {
+    transform: scale(1.05);
+    background: rgba(255,255,255,0.12);
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.12), 0 22px 70px rgba(38, 247, 216, 0.2);
+}
+
 .star2 {
     height: 3px;
     width: 3px;
@@ -146,5 +165,144 @@ body {
     height: auto;
     position: relative;
     z-index: 9;
-    opacity: 0.9;
+    opacity: 0.99; /* more opacity for the static image */
+    mix-blend-mode: screen;
+    filter: contrast(1.02) saturate(1.02);
+    cursor: pointer;
+    transition: transform 0.28s ease, opacity 0.28s ease;
+    will-change: transform, opacity;
+}
+
+.responsive-image:hover {
+    transform: scale(1.04);
+    opacity: 0.98;
+}
+
+/* optional small polish for the modal to look cooler */
+.login-modal.active .login-card {
+    transform: translateY(0) scale(1);
+    transition: transform 0.45s cubic-bezier(.2,.9,.2,1), box-shadow .45s;
+    box-shadow: 0 40px 120px rgba(0,0,0,0.7), 0 6px 30px rgba(124,92,255,0.12);
+    border: 1px solid rgba(255,255,255,0.06);
+}
+
+.login-label {
+  display: block;
+  margin-bottom: 12px;
+}
+
+.login-label span {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 0.82rem;
+  color: rgba(234, 242, 255, 0.65);
+}
+
+.login-btn.secondary {
+  background: rgba(255, 255, 255, 0.08);
+  color: #e9f5ff;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  margin-top: 10px;
+}
+
+.login-message {
+  margin-top: 18px;
+  min-height: 1.5rem;
+  font-size: 0.96rem;
+  text-align: center;
+  color: #d7f3ff;
+  opacity: 0.96;
+}
+
+.pattern-instructions {
+  color: rgba(234, 242, 255, 0.75);
+  font-size: 0.92rem;
+  text-align: center;
+  margin-bottom: 18px;
+}
+
+.pattern-lock {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    margin-top: 20px;
+    padding: 24px;
+    border-radius: 28px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    backdrop-filter: blur(14px);
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.03);
+    min-width: 320px;
+    min-height: 320px;
+    overflow: hidden;
+}
+
+.pattern-canvas {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.pattern-lock::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background-image:
+      linear-gradient(to right, rgba(255,255,255,0.18), rgba(255,255,255,0.18)),
+      linear-gradient(to right, rgba(255,255,255,0.18), rgba(255,255,255,0.18)),
+      linear-gradient(to bottom, rgba(255,255,255,0.18), rgba(255,255,255,0.18)),
+      linear-gradient(to bottom, rgba(255,255,255,0.18), rgba(255,255,255,0.18));
+    background-position: 0 33.3%, 0 66.6%, 33.3% 0, 66.6% 0;
+    background-repeat: no-repeat;
+    background-size: 100% 1px, 100% 1px, 1px 100%, 1px 100%;
+    opacity: 0.28;
+}
+
+.pattern-dot {
+    position: relative;
+    z-index: 1;
+    width: 72px;
+    height: 72px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    transition: transform 0.16s ease;
+}
+
+.pattern-dot::before,
+.pattern-dot::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+}
+
+.pattern-dot::before {
+    width: 18px;
+    height: 18px;
+    background: #fff;
+    box-shadow: 0 0 18px rgba(255,255,255,0.18);
+}
+
+.pattern-dot::after {
+    width: 52px;
+    height: 52px;
+    border: 2px solid rgba(255,255,255,0.85);
+    opacity: 0;
+    transition: opacity 0.16s ease, transform 0.16s ease;
+}
+
+.pattern-dot.active {
+    transform: scale(1.1);
+}
+
+.pattern-dot.active::after {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
 }
