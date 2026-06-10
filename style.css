@@ -1,57 +1,68 @@
-body {
-    margin: 0;
-    padding: 0;
-    min-height: 100vh;
-    width: 100vw;
-    overflow: hidden; 
-    background-color: #090809; 
-}
-
-#universe {
-    position: absolute; 
-    top: 0;
-    left: 0;
-    width: 100%; 
-    height: 100%; 
-    z-index: 10; 
-}
-
-.star0, .star1, .star2, .star3 {
-    opacity: 1;
-    position: absolute;
-    background-color: white;
-}
-
-.star0 {
-    height: 1px;
-    width: 1px;
-}
-
-.star1 {
-    height: 2px;
-    width: 2px;
-    border-radius: 50%;
-}
-
-.star2 {
-    height: 3px;
-    width: 3px;
-    border-radius: 50%;
-}
-
-.star3 {
-    height: 4px;
-    width: 4px;
-    border-radius: 50%;
-}
-
-
-.responsive-image {
+/* Make Orb a clean interactive button */
+.orb-container {
+    background: none;
+    border: none;
+    cursor: pointer;
     display: block;
     margin: 0 auto;
-    max-width: 100%;
-    height: auto;
+    padding: 0;
     position: relative;
-    z-index: 9;
-    opacity: 0.9;
+    z-index: 9; /* Above the universe */
+    transition: transform 0.3s ease;
+}
+
+.orb-container:hover {
+    transform: scale(1.05); /* Slight pop effect when hovering */
+}
+
+/* Password Modal Interface */
+.modal {
+    display: none; 
+    position: fixed; 
+    z-index: 100; /* Sit on top of everything */
+    left: 0;
+    top: 0;
+    width: 100%; 
+    height: 100%; 
+    background-color: rgba(0, 0, 0, 0.85); /* Black background with opacity */
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background-color: #1a1a1a;
+    border: 1px solid #444;
+    border-radius: 10px;
+    padding: 40px;
+    text-align: center;
+    color: white;
+    font-family: sans-serif;
+    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);
+}
+
+.modal-content input[type="password"] {
+    padding: 12px;
+    margin: 20px 0;
+    width: 80%;
+    border-radius: 5px;
+    border: 1px solid #555;
+    background: #000;
+    color: white;
+    font-size: 16px;
+}
+
+.login-btn {
+    padding: 12px 24px;
+    background-color: white;
+    color: black;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.login-btn:hover {
+    background-color: #ccc;
 }
