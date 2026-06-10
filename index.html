@@ -8,26 +8,184 @@
   <meta name="author" content="Gard Viljugrein">
 
   <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      background-color: #090809;
+      overflow: hidden;
+      margin: 0;
+      padding: 0;
+    }
+
+    .star0, .star1, .star2, .star3 {
+      opacity: 1;
+      position: absolute; 
+      background-color: white; 
+    }
+
+    .login-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .login-modal.active {
+      display: flex;
+      animation: slideUp 0.5s ease-out;
+    }
+
+    @keyframes slideUp {
+      from {
+      transform: translateY(100vh);
+      opacity: 0;
+      }
+      to {
+      transform: translateY(0);
+      opacity: 1;
+      }
+    }
+
+    .login-container {
+      background-color: #1a1a2e;
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      width: 90%;
+      max-width: 400px;
+    }
+
+    .login-container h2 {
+      color: #fff;
+      margin-bottom: 20px;
+    }
+
+    .login-container input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: none;
+      border-radius: 5px;
+    }
+
+    .login-container button {
+      width: 100%;
+      padding: 10px;
+      background-color: #00d4ff;
+      color: #000;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .login-container button:hover {
+      background-color: #00b8cc;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 28px;
+      cursor: pointer;
+    }
+
+    .responsive-image {
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+
+    .responsive-image:hover {
+      transform: scale(1.05);
+    }
+
+    .star0 {
+      height: 1px;
+      width: 1px;
+    }
+
+    .star1 {
+      height: 2px;
+      width: 2px;
+      border-radius: 50%;
+    }
+
+    .star2 {
+      height: 3px;
+      width: 3px;
+      border-radius: 50%;
+    }
+
+    .star3 {
+      height: 4px;
+      width: 4px;
+      border-radius: 50%;
+    }
+
+    .responsive-image {
+      display: block;
+      margin: 0 auto;
+      max-width: 100%;
+      height: auto;
+      opacity: 0.85;
+      position: relative; 
+      z-index: 9; 
+    }
+  </style>
 </head>
+
 <body>
   <div id="universe"></div>
 
-  <button id="orb-button" class="orb-container">
-    <img src="https://lh3.googleusercontent.com/pw/AP1GczPrwJQdnT4ATOxkLt707BxlvmpETyhezc3Ma8sAB55qh3sgGIug5bmigPNpHs6dXS72t0QxgQpguV_0s2oFpHFJM9j_PfjvKQS4j0O8q83Pan7zULw=w1080-h1080" width="1000" height="1000" class="responsive-image" alt="Orb">
-  </button>
+  <img src="https://lh3.googleusercontent.com/pw/AP1GczPrwJQdnT4ATOxkLt707BxlvmpETyhezc3Ma8sAB55qh3sgGIug5bmigPNpHs6dXS72t0QxgQpguV_0s2oFpHFJM9j_PfjvKQS4j0O8q83Pan7zULw=w1080-h1080" width="1000" height="1000" class="responsive-image">
 
-  <div id="password-modal" class="modal">
-    <div class="modal-content">
-      <h2>Developer Portal</h2>
-      <p>Please enter your access password.</p>
-      <input type="password" id="app-password" placeholder="Password">
-      <br>
-      <button id="submit-password" class="login-btn">Access Workspace</button>
-      <p id="error-message" style="color: red; display: none; margin-top: 10px;">Incorrect Password.</p>
-    </div>
-  </div>
+  <script>
+    var layerCount = 4;
+    var starCount = 500;
+    var maxTime = 31;
+    var universe = document.getElementById('universe');
+    var w = window;
+    var d = document;
+    var e = d.documentElement;
+    var g = d.getElementsByTagName('body')[0];
+    
+    var width = w.innerWidth || e.clientWidth || g.clientWidth;
+    var height = w.innerHeight || e.clientHeight || g.clientHeight;
 
-  <script src="animations.min.js"></script>
-  <script src="script.js"></script>
+    for (var i = 0; i < starCount; ++i) {
+      var xpos = Math.round(Math.random() * width);
+      var ypos = Math.round(Math.random() * height);
+
+      var star = document.createElement('div');
+      var speed = 1000 * (Math.random() * maxTime + 1);
+
+      star.setAttribute('class', 'star' + (3 - Math.floor((speed / 1000) / 8)));
+      star.style.backgroundColor = 'white'; // Keep stars white
+
+      universe.appendChild(star);
+
+      star.animate(
+        [
+          { transform: 'translate3d(' + xpos + 'px, ' + ypos + 'px, 0)' },
+          { transform: 'translate3d(-' + (Math.random() * 256 + (star.offsetWidth || 0)) + 'px, ' + ypos + 'px, 0)' }
+        ],
+        {
+          delay: Math.random() * -speed, 
+          duration: speed, 
+          iterations: 1000 
+        }
+      );
+    }
+  </script>
 </body>
 </html>
+
